@@ -15,6 +15,7 @@ from apps.account.filters import (
         WriterFilter,
         ProfileFilter,
     )
+from apps.sender.models import EmailHistory
 
 from api.account.pagination import (
         ProfilePagination,
@@ -81,9 +82,19 @@ class AuthenticationViewSet(LoggingMixin, viewsets.ModelViewSet):
 
         user = User.objects.filter(username=username, email=email)
         if user.exist():
-            # 이메일 전송
+            EmailHistory.object.send(type=EmailHistory.CODE, email=user.email)
             return Response(dict(message='해당 이메일로 인증 코드 전송을 완료하였습니다.'))
         return Response(dict(message='해당 이메일의 계정이 존재하지 않습니다.'))
+
+    @action(detail=False, methods=['POST', ], url_path='verify/code')
+    def verify_code(self, request, *args, **kwargs):
+
+        email = request.data.get('email', None)
+        code = request.data.get('code', None)
+
+        if EmailHistory.objects.check_code(email=email, code=code):
+            return Response(dict(message='인증이 완료되었습니다.'))
+        return Response(400, dict(message='인증 번호가 올바르지 않습니다.'))
 
     @action(detail=False, methods=['POST', ], url_path='search/username')
     def search_username(self, request, *args, **kwargs):

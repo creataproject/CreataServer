@@ -3,6 +3,8 @@ from django.utils.deconstruct import deconstructible
 import datetime
 import os
 import uuid
+import random
+import string
 
 
 @deconstructible
@@ -45,3 +47,17 @@ class Util(object):
                     number = int(number)
                 return '{number}{unit}'.format(number=str(number), unit=unit)
         return '{number}{unit}'.format(number=value, unit='')
+
+    @classmethod
+    def get_random_digit_letter(cls, length):
+        result = ''
+        for i in range(length):
+            result += random.choice(string.digits)
+        return str(result)
+
+    @classmethod
+    def get_random_letter(cls, length):
+        result = ''
+        for i in range(length):
+            result += random.choice(string.digits + string.ascii_letters)
+        return str(result)

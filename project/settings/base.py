@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'apps.account',
     'apps.post',
     'apps.social',
+    'apps.sender',
 ]
 
 

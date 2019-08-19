@@ -1,5 +1,3 @@
-from django.conf import settings
-
 from rest_framework import status
 
 from apps.sender.slack import SlackHandler
@@ -31,8 +29,6 @@ class LoggingMixin(object):
         try:
             if status.is_server_error(status_code):
                 SlackHandler.send_api_error_alarm(request=request, response=response, message='Error From Server')
-            # if status.is_client_error(status_code):
-            #     SlackHandler.send_api_error_alarm(request=request, response=response, message='Error From Client')
         except Exception as e:
             print('[Slack Message ERROR]')
             print(e)
