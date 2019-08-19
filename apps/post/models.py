@@ -4,9 +4,18 @@ from apps.account.models import Writer
 from apps.utils import FilenameChanger
 
 
+class TagManager(models.Manager):
+
+    def representative(self, writer):
+        # Todo 대표 태그
+        return self.all()[:2]
+
+
 class Tag(models.Model):
 
     name = models.CharField('이름', max_length=127)
+
+    objects = TagManager()
 
     class Meta:
         verbose_name = '태그'
@@ -27,15 +36,16 @@ class Cut(models.Model):
     class Meta:
         verbose_name = '컷'
         verbose_name_plural = '컷'
-        ordering = ['-created_at', ]
+        ordering = ['priority', ]
 
 
 class Post(models.Model):
 
     writer = models.ForeignKey(Writer, null=True, on_delete=models.SET_NULL, verbose_name='작가')
+    title = models.CharField('제목', max_length=1023)
     content = models.TextField('내용', blank=True, null=True, )
-    tag = models.ManyToManyField(Tag, blank=True, null=True, verbose_name='태그')
-    cut = models.ManyToManyField(Cut, verbose_name='컷')
+    tags = models.ManyToManyField(Tag, blank=True, verbose_name='태그')
+    cuts = models.ManyToManyField(Cut, blank=True, verbose_name='컷')
     created_at = models.DateTimeField('생성 날짜', auto_now_add=True)
     edited_at = models.DateTimeField('수정 날짜', auto_now=True)
     is_public = models.BooleanField('공개 여부', default=False)

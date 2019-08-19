@@ -62,17 +62,18 @@ class PostInline(admin.StackedInline):
 class PostAdmin(admin.ModelAdmin):
 
     date_hierarchy = 'created_at'
-    list_display = ['id', 'writer', 'created_at', 'edited_at', 'view_is_public', ]
+    list_display = ['id', 'writer', 'title', 'created_at', 'edited_at', 'view_is_public', ]
     search_fields = ['writer__name', 'tag__name', ]
     inlines = [CommentInline, LikeInline, ]
-    filter_horizontal = ['cut', 'tag', ]
+    filter_horizontal = ['cuts', 'tags', ]
     readonly_fields = ['created_at', 'edited_at', ]
     fieldsets = [
         ('기본 정보', {'fields': [
             'writer',
+            'title',
             'content',
-            'tag',
-            'cut',
+            'tags',
+            'cuts',
         ]}),
         ('부가 정보', {'fields': [
             ('created_at', 'edited_at',),

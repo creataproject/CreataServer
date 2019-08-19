@@ -1,6 +1,3 @@
-from apps.sender.tasks import async_send_slack_error_channel
-
-
 class SlackHandler(object):
 
     @classmethod
@@ -31,4 +28,4 @@ class SlackHandler(object):
         except Exception as error:
             slack_message = '```\n{}```'.format(repr(error))
 
-        async_send_slack_error_channel.delay(slack_message)
+        # async_send_slack_error_channel.delay(slack_message)

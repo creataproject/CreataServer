@@ -34,7 +34,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='사용자')
     name = models.CharField('이름', max_length=15)
     image = models.ImageField(upload_to=FilenameChanger('profile/image'), blank=True, null=True, verbose_name='이미지')
-    phone_num = models.CharField('전화번호', blank=True, null=True, max_length=15, help_text='- 없이 숫자만 입력해주세요.')
+    phone_num = models.CharField('전화번호', blank=True, null=True, unique=True, max_length=15, help_text='- 없이 숫자만 입력해주세요.')
 
     class Meta:
         verbose_name = '프로필'
@@ -51,7 +51,7 @@ class Writer(models.Model):
     name = models.CharField('이름', max_length=15)
     introduction = models.TextField('소개', blank=True, null=True, )
     image = models.ImageField(upload_to=FilenameChanger('writer/image'), blank=True, null=True, verbose_name='이미지')
-    phone_num = models.CharField('전화번호', blank=True, null=True, max_length=15)
+    phone_num = models.CharField('전화번호', blank=True, null=True, unique=True, max_length=15)
     instagram = models.CharField('인스타그램', blank=True, null=True, max_length=1023)
     facebook = models.CharField('페이스북', blank=True, null=True, max_length=1023)
 
