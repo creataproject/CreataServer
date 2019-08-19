@@ -27,6 +27,10 @@ INSTALLED_APPS = [
     'django_hosts',
     'django_filters',
     'rangefilter',
+
+    'apps.account',
+    'apps.post',
+    'apps.social',
 ]
 
 
