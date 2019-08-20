@@ -1,6 +1,3 @@
-manage.py
-project/settings/celery.py
-
 ../venv
 
 .DS_Store
