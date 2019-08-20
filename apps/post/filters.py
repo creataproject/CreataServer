@@ -22,15 +22,15 @@ class PostFilter(django_filters.FilterSet):
         fields = ['writer', 'tag', ]
 
     def filter_writer_name(self, queryset, name, value):
-        return queryset.filter(writer__name=value)
+        return queryset.filter(writer__name__icontains=value)
 
     def filter_tag(self, queryset, name, value):
-        return queryset.filter(tag__name=value)
+        return queryset.filter(tags__name__icontains=value)
 
     def filter_like(self, queryset, name, value):
         post_id_list = list(Like.objects.filter(
                                             content_type__model='post',
-                                            profile__id=value,
+                                            profile=value,
                                             is_liked=True,)\
                                         .values_list('object_id', flat=True))
         return queryset.filter(id__in=post_id_list)
