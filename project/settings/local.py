@@ -16,12 +16,8 @@ ROOT_DIR = os.path.dirname(PROJECT_DIR)
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'creata',
-        'USER': 'postgres',
-        'PASSWORD': 'creataq!w@e#',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(PROJECT_DIR, 'db.sqlite3'),
     }
 }
 
