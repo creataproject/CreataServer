@@ -15,6 +15,7 @@ from apps.account.filters import (
         WriterFilter,
         ProfileFilter,
     )
+from apps.post.models import Post
 from apps.sender.models import EmailHistory
 
 from api.account.pagination import (
@@ -29,6 +30,7 @@ from api.account.serializers import (
         WriterSerializer,
         CreateOrUpdateWriterSerializer,
     )
+from api.post.serializers import PostListSerializer
 from api.logging import LoggingMixin
 
 
@@ -172,3 +174,10 @@ class WriterViewSet(LoggingMixin, viewsets.ModelViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
+
+    @action(detail=True, methods=['GET', ], )
+    def post(self, request, pk):
+        writer = Writer.objects.get(id=pk)
+        post_qs = Post.objects.filter(writer=writer).order_by('-created_at')
+        return Response(PostListSerializer(post_qs, context=self.get_serializer_context(), many=True).data)
+
