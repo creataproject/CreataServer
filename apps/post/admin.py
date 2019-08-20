@@ -52,7 +52,7 @@ class PostAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
     list_display = ['id', 'writer', 'title', 'created_at', 'edited_at', 'view_is_public', 'view_like_count', 'view_comment_count', ]
     list_filter = ['tags', ]
-    search_fields = ['writer__name', 'tag__name', ]
+    search_fields = ['writer__name', ]
     inlines = [CutInline, CommentInline, LikeInline, ]
     filter_horizontal = ['tags', ]
     readonly_fields = ['created_at', 'edited_at', ]
