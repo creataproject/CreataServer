@@ -179,5 +179,9 @@ class WriterViewSet(LoggingMixin, viewsets.ModelViewSet):
     def post(self, request, pk):
         writer = Writer.objects.get(id=pk)
         post_qs = Post.objects.filter(writer=writer).order_by('-created_at')
-        return Response(PostListSerializer(post_qs, context=self.get_serializer_context(), many=True).data)
+        page = self.paginate_queryset(post_qs)
+        if page is not None:
+            queryset = page
+        serializer = PostListSerializer(queryset, context=self.get_serializer_context(), many=True)
+        return self.get_paginated_response(serializer.data)
 
