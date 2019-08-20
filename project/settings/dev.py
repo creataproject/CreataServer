@@ -31,10 +31,21 @@ INSTALLED_APPS = INSTALLED_APPS + [
 ]
 
 
-
 # WSGI
 
 WSGI_APPLICATION = 'project.wsgi.dev.application'
+
+
+# Email
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'id@gmail.com'
+EMAIL_HOST_PASSWORD = 'password'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'creat0214@gmail.com'
+DEFAULT_TO_EMAIL = 'creat0214@gmail.com'
+DEFAULT_ADMIN_EMAIL = 'creat0214@gmail.net'
 
 
 # Static Files
