@@ -79,7 +79,7 @@ class CreateOrUpdateProfileSerializer(serializers.ModelSerializer):
 class WriterListSerializer(serializers.ModelSerializer):
 
     image = AbsoluteURLField()
-    like = LikeField()
+    like = LikeField(source='*')
 
     class Meta:
         model = Writer
@@ -96,7 +96,7 @@ class WriterSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
     email = serializers.CharField(source='user.email')
     image = AbsoluteURLField()
-    like = LikeField()
+    like = LikeField(source='*')
 
     class Meta:
         model = Writer

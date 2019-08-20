@@ -13,7 +13,7 @@ import django_filters
 
 class PostFilter(django_filters.FilterSet):
 
-    writer = django_filters.CharFilter(label='작가', method='filter_writer')
+    name = django_filters.CharFilter(label='작가', method='filter_writer_name')
     tag = django_filters.CharFilter(label='이름', method='filter_tag')
     like = django_filters.ModelChoiceFilter(label='좋아요', queryset=Profile.objects.all(), method='filter_like')
 
@@ -21,7 +21,7 @@ class PostFilter(django_filters.FilterSet):
         model = Post
         fields = ['writer', 'tag', ]
 
-    def filter_writer(self, queryset, name, value):
+    def filter_writer_name(self, queryset, name, value):
         return queryset.filter(writer__name=value)
 
     def filter_tag(self, queryset, name, value):

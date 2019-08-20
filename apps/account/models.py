@@ -1,32 +1,7 @@
 from django.db import models
-from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
 from apps.utils import FilenameChanger
-
-
-class UserAdmin(BaseUserAdmin):
-
-    def __init__(self, *args, **kwargs):
-        super(UserAdmin, self).__init__(*args, **kwargs)
-        UserAdmin.list_display = ['id', 'view_nickname', 'view_name', 'username', 'date_joined', 'is_active', ]
-    ordering = ['-date_joined',]
-
-    def view_nickname(self, obj):
-        return '{}'.format(Profile.objects.get(user=obj).nickname)
-    view_nickname.short_description = '닉네임'
-
-    def view_name(self, obj):
-        return '{last_name}{first_name}'.format(last_name=obj.last_name, first_name=obj.first_name)
-    view_name.short_description = '이름'
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
-
-admin.site.unregister(User)
-admin.site.register(User, UserAdmin)
 
 
 class Profile(models.Model):
@@ -42,7 +17,7 @@ class Profile(models.Model):
         ordering = ['name', ]
 
     def __str__(self):
-        return '사용자 {}'.format(self.name)
+        return '{} (사용자)'.format(self.name)
 
 
 class Writer(models.Model):
@@ -61,4 +36,4 @@ class Writer(models.Model):
         ordering = ['name', ]
 
     def __str__(self):
-        return '작가 {}'.format(self.name)
+        return '{} (작가)'.format(self.name)

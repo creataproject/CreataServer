@@ -1,11 +1,12 @@
 from rest_framework import viewsets
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 
 from apps.post.models import (
         Post,
         Tag,
+    )
+from apps.post.filters import (
+        PostFilter,
+        TagFilter,
     )
 
 from api.logging import LoggingMixin
@@ -30,6 +31,7 @@ class PostViewSet(LoggingMixin, viewsets.ModelViewSet):
         'list': PostListSerializer,
         'retrieve': PostSerializer,
     }
+    filterset_class = PostFilter
 
     def get_serializer_class(self):
         return self.serializer_classes.get(self.action, self.serializer_class)
@@ -44,6 +46,7 @@ class TagViewSet(LoggingMixin, viewsets.ModelViewSet):
     serializer_classes = {
         'list': TagSerializer,
     }
+    filterset_class = TagFilter
 
     def get_serializer_class(self):
         return self.serializer_classes.get(self.action, self.serializer_class)

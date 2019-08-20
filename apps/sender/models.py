@@ -11,8 +11,6 @@ import datetime
 class EmailHistoryManager(models.Manager):
 
     def send(self, type, email):
-        code = ''
-
         if type == EmailHistory.CODE:
             today = datetime.date.today()
             count = self.filter(
@@ -29,22 +27,31 @@ class EmailHistoryManager(models.Manager):
             content = '인증번호는 {} 입니다. 해당 인증번호를 정확하게 입력해주세요.'.format(str(code))
 
             message = loader.render_to_string(
-                'error_email.html',
+                'code.html',
                 {
                     'subject': '아이템 크롤링 오류',
                     'content': content,
                     'add_message': '',
                 }
             )
-
-            # @Todo 비동기
-            send_mail('[닷다] 비밀번호 찾기 인증번호 입니다.', '', settings.DEFAULT_FROM_EMAIL, email_list, html_message=message)
-
-        return self.create(email=email, content=content, type=type, code=code)
+            try:
+                # @Todo 비동기
+                send_mail('[닷다] 비밀번호 찾기 인증번호 입니다.', '', settings.DEFAULT_FROM_EMAIL, email_list, html_message=message)
+                return self.create(email=email, content=content, type=type, code=code, is_success=True)
+            except:
+                return self.create(email=email, content=content, type=type, code=code, is_success=False)
 
     def check_code(self, code=None, email=None):
         sms_qs = self.filter(email=email, type=EmailHistory.CODE).order_by('-created_at').first()
-        return False if sms_qs is None else sms_qs.code == code
+        if sms_qs is None:
+            return False
+        if sms_qs.code != code:
+            return False
+        else:
+            sms_qs.is_completed = True
+            sms_qs.save()
+            return True
+        return False
 
 
 class EmailHistory(models.Model):
@@ -60,6 +67,8 @@ class EmailHistory(models.Model):
     code = models.CharField('인증 코드', blank=True, null=True, max_length=7)
     type = models.PositiveSmallIntegerField('타입', choices=TYPE, default=CODE)
     created_at = models.DateTimeField('생성 날짜', auto_now=True)
+    is_success = models.BooleanField('성공 여부', default=False)
+    is_completed = models.BooleanField('인증 완료 여부', default=False)
 
     objects = EmailHistoryManager()
 
@@ -69,4 +78,4 @@ class EmailHistory(models.Model):
         ordering = ['-created_at', ]
 
     def __str__(self):
-        return '{email} Email ({type})'.format(email=self.email, type=self.get_type_display())
+        return '{email} ({type})'.format(email=self.email, type=self.get_type_display())

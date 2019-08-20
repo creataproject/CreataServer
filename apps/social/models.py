@@ -19,7 +19,7 @@ class Like(models.Model):
         ordering = ['profile', ]
 
     def __str__(self):
-        return '{name}님이 좋아요를 {like}(했)습니다.'.format(name=self.profile.nickname, like='눌렀' if self.is_liked else '취소')
+        return '{name}님이 좋아요를 {like}(했)습니다.'.format(name=self.profile.name, like='눌렀' if self.is_liked else '취소')
 
 
 class Comment(models.Model):
@@ -40,7 +40,7 @@ class Comment(models.Model):
         ordering = ['-created_at', ]
 
     def __str__(self):
-        return '{id} : {name}님의 댓글 "{content}..."'.format(id=self.id, name=self.profile.nickname, content=self.content[:20])
+        return '{id} : {name}님의 댓글 "{content}..."'.format(id=self.id, name=self.profile.name, content=self.content[:20])
 
     def get_content(self):
         if self.is_blocked:

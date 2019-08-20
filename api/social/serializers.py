@@ -4,14 +4,17 @@ from api.account.serializers import ProfileListSerializer
 
 from api.fields import LikeField
 
-from apps.social.models import Comment
+from apps.social.models import (
+        Comment,
+        Like,
+    )
 
 
 class CommentSerializer(serializers.ModelSerializer):
 
     profile = ProfileListSerializer()
     content = serializers.SerializerMethodField()
-    like = LikeField()
+    like = LikeField(source='*')
 
     class Meta:
         model = Comment
@@ -28,4 +31,19 @@ class CommentSerializer(serializers.ModelSerializer):
         if obj.is_blocked:
             return obj.blocked_message
         return obj.content
+
+
+class LikeSerializer(serializers.ModelSerializer):
+
+    profile = ProfileListSerializer()
+    content_type = serializers.CharField(source='content_type.model')
+
+    class Meta:
+        model = Like
+        fields = [
+            'profile',
+            'is_liked',
+            'content_type',
+            'object_id',
+        ]
 

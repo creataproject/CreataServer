@@ -3,6 +3,7 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from api.account.viewsets import (
+        AuthenticationViewSet,
         ProfileViewSet,
         WriterViewSet,
     )
@@ -19,6 +20,7 @@ app_name = 'api'
 
 router = DefaultRouter()
 
+router.register('auth', AuthenticationViewSet)
 router.register('profile', ProfileViewSet)
 router.register('writer', WriterViewSet)
 router.register('post', PostViewSet)

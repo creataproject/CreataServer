@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'rest_framework.authtoken',
     'django_hosts',
     'django_filters',
     'rangefilter',
@@ -90,7 +91,6 @@ REST_FRAMEWORK = {
         'django_filters.rest_framework.DjangoFilterBackend', # django_filters
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
         'project.authenticate.CustomTokenAuthentication',
     ),
 }

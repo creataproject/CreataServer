@@ -26,26 +26,12 @@ class Tag(models.Model):
         return self.name
 
 
-class Cut(models.Model):
-
-    image = models.ImageField(upload_to=FilenameChanger('cut'), verbose_name='이미지')
-    priority = models.PositiveSmallIntegerField('우선순위', default=1)
-    created_at = models.DateTimeField('생성 날짜', auto_now_add=True)
-    edited_at = models.DateTimeField('수정 날짜', auto_now=True)
-
-    class Meta:
-        verbose_name = '컷'
-        verbose_name_plural = '컷'
-        ordering = ['priority', ]
-
-
 class Post(models.Model):
 
     writer = models.ForeignKey(Writer, null=True, on_delete=models.SET_NULL, verbose_name='작가')
     title = models.CharField('제목', max_length=1023)
     content = models.TextField('내용', blank=True, null=True, )
     tags = models.ManyToManyField(Tag, blank=True, verbose_name='태그')
-    cuts = models.ManyToManyField(Cut, blank=True, verbose_name='컷')
     created_at = models.DateTimeField('생성 날짜', auto_now_add=True)
     edited_at = models.DateTimeField('수정 날짜', auto_now=True)
     is_public = models.BooleanField('공개 여부', default=False)
@@ -56,6 +42,26 @@ class Post(models.Model):
         ordering = ['-created_at', ]
 
     def __str__(self):
-        return self.content
+        return '{} ({})'.format(self.title, self.created_at)
+
+    @property
+    def thumbnail(self):
+        return Cut.objects.filter(post=self).first()
+
+    @property
+    def cuts(self):
+        return Cut.objects.filter(post=self)
 
 
+class Cut(models.Model):
+
+    post = models.ForeignKey(Post, null=True, on_delete=models.SET_NULL, verbose_name='게시물')
+    image = models.ImageField(upload_to=FilenameChanger('cut'), verbose_name='이미지')
+    priority = models.PositiveSmallIntegerField('우선순위', default=1)
+    created_at = models.DateTimeField('생성 날짜', auto_now_add=True)
+    edited_at = models.DateTimeField('수정 날짜', auto_now=True)
+
+    class Meta:
+        verbose_name = '컷'
+        verbose_name_plural = '컷'
+        ordering = ['priority', ]

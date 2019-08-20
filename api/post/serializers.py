@@ -42,9 +42,9 @@ class CutSerializer(serializers.ModelSerializer):
 class PostListSerializer(serializers.ModelSerializer):
 
     writer = WriterListSerializer()
-    tag = TagSerializer(many=True)
-    cut = serializers.SerializerMethodField()
-    like = LikeField()
+    tags = TagSerializer(many=True)
+    thumbnail = CutSerializer()
+    like = LikeField(source='*')
 
     class Meta:
         model = Post
@@ -53,24 +53,21 @@ class PostListSerializer(serializers.ModelSerializer):
             'writer',
             'title',
             'content',
-            'tag',
-            'cut',
+            'tags',
+            'thumbnail',
             'created_at',
             'edited_at',
             'is_public',
             'like',
         ]
 
-    def get_cut(self, obj):
-        return CutSerializer(obj.cut.all().order_by('priority').first()).data
-
 
 class PostSerializer(serializers.ModelSerializer):
 
     writer = WriterSerializer()
-    tag = TagSerializer(many=True)
-    cut = CutSerializer(many=True)
-    like = LikeField()
+    tags = TagSerializer(many=True)
+    cuts = CutSerializer(many=True)
+    like = LikeField(source='*')
 
     class Meta:
         model = Post
@@ -79,8 +76,8 @@ class PostSerializer(serializers.ModelSerializer):
             'writer',
             'title',
             'content',
-            'tag',
-            'cut',
+            'tags',
+            'cuts',
             'created_at',
             'edited_at',
             'is_public',

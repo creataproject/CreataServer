@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from django.utils.html import format_html
 
@@ -7,6 +8,22 @@ from apps.account.models import (
         Writer,
     )
 from apps.post.admin import PostInline
+
+
+class UserAdmin(BaseUserAdmin):
+
+    def __init__(self, *args, **kwargs):
+        super(UserAdmin, self).__init__(*args, **kwargs)
+        UserAdmin.list_display = ['id', 'view_name', 'username', 'date_joined', 'is_active', ]
+    ordering = ['-date_joined',]
+
+    def view_name(self, obj):
+        return '{}'.format(Profile.objects.get(user=obj).name)
+    view_name.short_description = '이름'
+
+
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
 
 
 @admin.register(Profile)
@@ -72,7 +89,7 @@ class WriterAdmin(admin.ModelAdmin):
     inlines = [PostInline, ]
     fieldsets = [
         ('개인정보', {'fields': [
-            'view_user',
+            'user',
             'name',
             'introduction',
             'image',

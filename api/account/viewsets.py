@@ -34,6 +34,14 @@ from api.logging import LoggingMixin
 
 class AuthenticationViewSet(LoggingMixin, viewsets.ModelViewSet):
 
+    queryset = Profile.objects.filter(user__is_active=True)
+
+    @action(detail=False, methods=['GET', ], url_path='check/username')
+    def check_duplicate_username(self, request, *args, **kwargs):
+        if User.objects.filter(username=request.GET.get('username', None)).exists():
+            return Response(dict(message='해당 아이디가 이미 존재합니다.'))
+        return Response(dict(message='사용 가능한 아이디입니다.'))
+
     @action(detail=False, methods=['POST',], )
     def signup(self, request, *args, **kwargs):
 
@@ -81,8 +89,8 @@ class AuthenticationViewSet(LoggingMixin, viewsets.ModelViewSet):
         email = request.data.get('email', None)
 
         user = User.objects.filter(username=username, email=email)
-        if user.exist():
-            EmailHistory.object.send(type=EmailHistory.CODE, email=user.email)
+        if user.exists():
+            EmailHistory.objects.send(type=EmailHistory.CODE, email=user.first().email)
             return Response(dict(message='해당 이메일로 인증 코드 전송을 완료하였습니다.'))
         return Response(dict(message='해당 이메일의 계정이 존재하지 않습니다.'))
 
@@ -94,7 +102,7 @@ class AuthenticationViewSet(LoggingMixin, viewsets.ModelViewSet):
 
         if EmailHistory.objects.check_code(email=email, code=code):
             return Response(dict(message='인증이 완료되었습니다.'))
-        return Response(400, dict(message='인증 번호가 올바르지 않습니다.'))
+        return Response(status=400, data=dict(message='인증 번호가 올바르지 않습니다.'))
 
     @action(detail=False, methods=['POST', ], url_path='search/username')
     def search_username(self, request, *args, **kwargs):
@@ -102,21 +110,19 @@ class AuthenticationViewSet(LoggingMixin, viewsets.ModelViewSet):
         email = request.data.get('email', None)
 
         user = User.objects.filter(email=email)
-        if user.exist():
-            return Response(dict(username=user.username))
+        if user.exists():
+            return Response(dict(username=user.first().username))
         return Response(dict(message='해당 이메일의 계정이 존재하지 않습니다.'))
 
 
 class ProfileViewSet(LoggingMixin, viewsets.ModelViewSet):
 
-    permission_classes = [IsAuthenticated, ]
     pagination_class = ProfilePagination
     queryset = Profile.objects.filter(user__is_active=True)
     serializer_class = ProfileSerializer
     serializer_classes = {
         'list': ProfileListSerializer,
         'retrieve': ProfileSerializer,
-        'create': CreateOrUpdateProfileSerializer,
     }
     filterset_class = ProfileFilter
 
@@ -135,19 +141,17 @@ class ProfileViewSet(LoggingMixin, viewsets.ModelViewSet):
             serializer = CreateOrUpdateProfileSerializer(profile, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response(serializer.data)
+            return Response()
 
 
 class WriterViewSet(LoggingMixin, viewsets.ModelViewSet):
 
-    permission_classes = [IsAuthenticated, ]
     pagination_class = WriterPagination
     queryset = Writer.objects.filter(user__is_active=True)
     serializer_class = WriterSerializer
     serializer_classes = {
         'list': WriterListSerializer,
         'retrieve': WriterSerializer,
-        'create': CreateOrUpdateWriterSerializer,
     }
 
     filterset_class = WriterFilter

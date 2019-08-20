@@ -25,29 +25,17 @@ class TagAdmin(admin.ModelAdmin):
     ordering = ['-name', ]
 
 
-@admin.register(Cut)
-class CutAdmin(admin.ModelAdmin):
+class CutInline(admin.TabularInline):
 
-    date_hierarchy = 'created_at'
-    list_display = ['id', 'view_image', 'priority', 'created_at', 'edited_at', ]
+    model = Cut
+    extra = 0
     readonly_fields = ['created_at', 'edited_at', ]
-    fieldsets = [
-        ('기본 정보', {'fields': [
-            'image',
-            'priority',
-        ]}),
-        ('부가 정보', {'fields': [
-            ('created_at', 'edited_at',),
-        ]}),
-    ]
 
     def view_image(self, obj):
-        if obj.image != '':
-            link = str(obj.image)
-            if 'http' not in link:
-                link = obj.image.url
-            return format_html('<img src="{link}" height="50px"/>'.format(link=link))
-        return '-'
+        try:
+            return format_html('<img src="{link}" height="50px"/>'.format(link=obj.image.url))
+        except:
+            return '-'
     view_image.short_description = '이미지'
 
 
@@ -62,10 +50,11 @@ class PostInline(admin.StackedInline):
 class PostAdmin(admin.ModelAdmin):
 
     date_hierarchy = 'created_at'
-    list_display = ['id', 'writer', 'title', 'created_at', 'edited_at', 'view_is_public', ]
+    list_display = ['id', 'writer', 'title', 'created_at', 'edited_at', 'view_is_public', 'view_like_count', 'view_comment_count', ]
+    list_filter = ['tags', ]
     search_fields = ['writer__name', 'tag__name', ]
-    inlines = [CommentInline, LikeInline, ]
-    filter_horizontal = ['cuts', 'tags', ]
+    inlines = [CutInline, CommentInline, LikeInline, ]
+    filter_horizontal = ['tags', ]
     readonly_fields = ['created_at', 'edited_at', ]
     fieldsets = [
         ('기본 정보', {'fields': [
@@ -73,7 +62,6 @@ class PostAdmin(admin.ModelAdmin):
             'title',
             'content',
             'tags',
-            'cuts',
         ]}),
         ('부가 정보', {'fields': [
             ('created_at', 'edited_at',),
@@ -81,6 +69,19 @@ class PostAdmin(admin.ModelAdmin):
         ]}),
     ]
     actions = ['do_update_public', 'do_update_private', ]
+
+    def view_like_count(self, obj):
+        return str(Like.objects.filter(
+                                    content_type__model='post',
+                                    object_id=obj.id,
+                                    is_liked=True).count()) + '개'
+    view_like_count.short_description = '좋아요'
+
+    def view_comment_count(self, obj):
+        return str(Comment.objects.filter(
+                                    content_type__model='post',
+                                    object_id=obj.id).count()) + '개'
+    view_comment_count.short_description = '댓글'
 
     def view_is_public(self, obj):
         if obj.is_public:
