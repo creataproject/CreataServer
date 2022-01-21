@@ -29,7 +29,7 @@ djangorestframework==3.9.2
 Fabric3==1.14.post1
 idna==2.8
 importlib-metadata==0.19
-ipython==7.5.0
+ipython==7.16.3
 ipython-genutils==0.2.0
 jedi==0.13.3
 kombu==4.6.3
